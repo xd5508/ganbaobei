@@ -8,7 +8,7 @@ include_once("../../lib/user.class.php");
 
 $own = new mysql();
 
-if($_POST['username'] == '') die('请填写您的手机号!');
+if($_POST['username'] == '') die('请填写您的账号!');
 if($_POST['password'] == '') die('请填写您的密码！');
 
 $a = array(
@@ -30,7 +30,7 @@ switch($result) {
 		die('登陆成功！');
 		break;
 	case 1001:
-		die('手机号不存在！!');
+		die('账号不存在！');
 		break;
 	case 1002:
 		die('密码错误！');

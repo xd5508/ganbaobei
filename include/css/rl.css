@@ -7,9 +7,9 @@ div.logo div a:hover{color: #2588f8;}
 div.logo div a.right{float: right; display: inline-block; line-height: 30px; height: 30px; padding-left: 10px; padding-right: 10px; font-size: 20px; color: #666; border: 1px #666 dashed; font-weight: normal;}
 div.logo div a.right:hover{color: #666; background: #CCC;}
 
-div.mian{max-width: 800px; margin: auto; margin-bottom: 200px;}
+div.mian{max-width: 490px; margin: auto; margin-bottom: 200px;}
 div.mian div{margin-bottom: 20px; border-bottom: 1px #CCC solid;}
-div.mian div h1{margin-bottom: 10px; color: #333;}
+div.mian div h1{margin-bottom: 10px; color: #333; padding-top: 100px; font-family: "microsoft yahei"; text-align: center;}
 div.mian div h2{margin-bottom: 20px; font-weight: normal; font-size: 12px; color: #999;}
 div.mian ul h3{font-size: 18px; line-height: 40px; height: 40px; color: #FFF; background: green; margin-bottom: 10px; padding-left: 10px; font-weight: normal;}
 

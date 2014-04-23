@@ -5,9 +5,15 @@ if(isset($_GET['token'])) $token = $_GET['token'];
 
 if($token != '') {
     if($token != $_SESSION['token']) {
-    	$_POST['timer'] = time();
+        $_POST['timer'] = time();
+        if(isset($_POST['xianshi'])) {
+            $xianshi = 2;
+            unset($_POST['xianshi']);
+        }
         if($mysql->insert('tixian', $_POST)) {
-        	//$mysql->update('user', array('dongjie' => $_POST['money']), 'id = ' . $_POST['uid']);
+            if($xianshi == 2) {
+                $mysql->update('user', array('xianshi' => 2), 'id = ' . $_POST['uid']);
+            }
             header("Location: /");
         }else{
             echo mysql_error();
@@ -17,7 +23,7 @@ if($token != '') {
         header("Location: /");
     }
 }
-	
+
 ?>
 <style type="text/css">
     div.mian ol{padding-bottom: 100px;}
@@ -47,65 +53,83 @@ if($token != '') {
 
 
 <style type="text/css">
-	table{width: 100%; border-collapse: collapse;}
-	table tr td{padding: 5px; border: 1px #CCC solid; font-size: 12px;}
-	table tr td input{padding: 3px;}
+    table{width: 100%; border-collapse: collapse;}
+    table tr td{padding: 5px; border: 1px #CCC solid; font-size: 12px;}
+    table tr td input{padding: 3px;}
 </style>
 
 <ol>
 
-<table>
-	
-	<tr>
-	
-		<td>说明</td>
-		<td>金额</td>
-		<td>时间</td>
-	
-	</tr>
+    <table>
 
-<?php
-	
-	$s = array(
-		'table' => 'money',
-		'condition' => 'uid = ' . $o['id']
-	);
-	//print_r($s);
-	$r = $mysql->select($s);
-	//print_r($r);
-	$zong = 0;
-	
-	foreach($r as $key => $value) {
-		$v = $value['money'];
-		$zong += $v['money'];
-	
-	
-?>
-	
-	<tr>
-	
-		<td><?php if($v['fenhong'] == 1) {echo '营业分红';}else{echo '下线返还';} ?></td>
-		<td><?php echo $v['money']; ?></td>
-		<td><?php echo date('Y.m.d H:i:s', $v['timer']); ?></td>
-	
-	</tr>
-	
-	<?php } ?>
-	
-</table>
+        <tr>
 
-		<ul>
-			
-			<li>
-				<form action="?token=<?php echo md5(rand(0, 100000000)); ?>" method="post">
-					总计：<?php echo $zong; ?> | 已提取：<?php echo $yitiqu; ?> | 已冻结：<?php echo $dongjie; ?> | 未提取：<?php $yue = $zong - $yitiqu - $dongjie; echo $yue; ?> | 还可提取：<?php if($zong > $o['money']) {$zong = $o['money'];} $yue = $zong - $yitiqu - $dongjie; echo $yue; ?>
-					<input type="hidden" name="card" value="<?php echo $o['card']; ?>" />
-					<input type="hidden" name="username" value="<?php echo $o['username']; ?>" />
-					<input type="hidden" name="money" value="<?php echo $yue; ?>" />
-					<input type="hidden" name="uid" value="<?php echo $o['id']; ?>" />
-					<button>提现</button>
-				</form>
-			</li>
-			
-		</ul>
+            <td>说明</td>
+            <td>金额</td>
+            <td>时间</td>
+
+        </tr>
+
+        <?php
+
+        $s = array(
+            'table' => 'money',
+            'condition' => 'uid = ' . $o['id']
+        );
+        //print_r($s);
+        $r = $mysql->select($s);
+        //print_r($r);
+        $zong = 0;
+        $fen = 0;
+        $xia = 0;
+        $yifen = 0;
+
+        foreach($r as $key => $value) {
+            $v = $value['money'];
+            $zong += $v['money'];
+            if($v['fenhong'] == 1) {
+                $fen += $v['money'];
+            }else{
+                $xia += $v['money'];
+            }
+
+            if($zong == $yitiqu) {
+                $yifen = $fen;
+                $fen = 0;
+                $yixia = $xia;
+                $xia = 0;
+            }
+
+
+            ?>
+
+            <tr>
+
+                <td><?php if($v['fenhong'] == 1) {echo '营业分红';}else{echo '下线返还';} ?></td>
+                <td><?php echo $v['money']; ?></td>
+                <td><?php echo date('Y.m.d H:i:s', $v['timer']); ?></td>
+
+            </tr>
+
+        <?php } ?>
+
+    </table>
+
+    <ul>
+
+        <li>
+            <form action="?token=<?php echo md5(rand(0, 100000000)); ?>" method="post">
+                总计：<?php echo $zong; ?> | 分红总计：<?php echo $yifen + $fen; ?> | 下线总计：<?php echo $yixia + $xia; ?> | 已提取：<?php echo $yitiqu; ?> | 已冻结：<?php echo $dongjie; ?> | 未提取：<?php $yue = $fen + $xia - $dongjie; echo $yue; ?> | 还可提取：<?php $fen1 = $fen; if(($yifen + $fen) >= $o['money']) {$fen1 = $o['money'] - $yifen;} $yue = $fen1 + $xia - $dongjie; echo $yue; ?>
+                <input type="hidden" name="card" value="<?php echo $o['card']; ?>" />
+                <input type="hidden" name="username" value="<?php echo $o['username']; ?>" />
+                <input type="hidden" name="money" value="<?php echo $yue; ?>" />
+                <input type="hidden" name="uid" value="<?php echo $o['id']; ?>" />
+                <?php if(($yifen + $fen) >= $o['money'] and $o['money'] > 0) { ?>
+                    <input type="hidden" name="xianshi" value="2" />
+                    <button>提现</button>
+                <?php } ?>
+            </form>
+        </li>
+
+    </ul>
 </ol>

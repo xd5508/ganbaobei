@@ -13,7 +13,7 @@ if($token != '') {
         		'condition' => 'id = ' . $_POST['id']
         	);
         	$r = $mysql->row($s);
-        	print_r($r);
+        	//print_r($r);
         	$mysql->insert('money', array('fenhong' => 0, 'money' => 60, 'uid' => $r['uid'], 'timer' => time()));
         	//echo mysql_error();
         	
@@ -22,7 +22,7 @@ if($token != '') {
         		'condition' => 'id = ' . $r['uid']
         	);
         	$r = $mysql->row($s);
-        	print_r($r);
+        	//print_r($r);
         	$mysql->insert('money', array('fenhong' => 0, 'money' => 40, 'uid' => $r['uid'], 'timer' => time()));
         	
         	$s = array(
@@ -30,7 +30,7 @@ if($token != '') {
         		'condition' => 'id = ' . $r['uid']
         	);
         	$r = $mysql->row($s);
-        	print_r($r);
+        	//print_r($r);
         	$mysql->insert('money', array('fenhong' => 0, 'money' => 20, 'uid' => $r['uid'], 'timer' => time()));
         	
         	$s = array(
@@ -38,7 +38,7 @@ if($token != '') {
         		'condition' => 'id = ' . $r['uid']
         	);
         	$r = $mysql->row($s);
-        	print_r($r);
+        	//print_r($r);
         	$mysql->insert('money', array('fenhong' => 0, 'money' => 10, 'uid' => $r['uid'], 'timer' => time()));
         	
         	$s = array(
@@ -46,7 +46,7 @@ if($token != '') {
         		'condition' => 'id = ' . $r['uid']
         	);
         	$r = $mysql->row($s);
-        	print_r($r);
+        	//print_r($r);
         	$mysql->insert('money', array('fenhong' => 0, 'money' => 10, 'uid' => $r['uid'], 'timer' => time()));
         	
         	$s = array(
@@ -54,7 +54,7 @@ if($token != '') {
         		'condition' => 'id = ' . $r['uid']
         	);
         	$r = $mysql->row($s);
-        	print_r($r);
+        	//print_r($r);
         	$mysql->insert('money', array('fenhong' => 0, 'money' => 10, 'uid' => $r['uid'], 'timer' => time()));
         	
         	$s = array(
@@ -62,7 +62,7 @@ if($token != '') {
         		'condition' => 'id = ' . $r['uid']
         	);
         	$r = $mysql->row($s);
-        	print_r($r);
+        	//print_r($r);
         	$mysql->insert('money', array('fenhong' => 0, 'money' => 10, 'uid' => $r['uid'], 'timer' => time()));
         	
         	$s = array(
@@ -70,7 +70,7 @@ if($token != '') {
         		'condition' => 'id = ' . $r['uid']
         	);
         	$r = $mysql->row($s);
-        	print_r($r);
+        	//print_r($r);
         	$mysql->insert('money', array('fenhong' => 0, 'money' => 10, 'uid' => $r['uid'], 'timer' => time()));
         	
         	$s = array(
@@ -78,7 +78,7 @@ if($token != '') {
         		'condition' => 'id = ' . $r['uid']
         	);
         	$r = $mysql->row($s);
-        	print_r($r);
+        	//print_r($r);
         	$mysql->insert('money', array('fenhong' => 0, 'money' => 10, 'uid' => $r['uid'], 'timer' => time()));
         	
         	$s = array(
@@ -86,11 +86,11 @@ if($token != '') {
         		'condition' => 'id = ' . $r['uid']
         	);
         	$r = $mysql->row($s);
-        	print_r($r);
+        	//print_r($r);
         	$mysql->insert('money', array('fenhong' => 0, 'money' => 6, 'uid' => $r['uid'], 'timer' => time()));
         	
         	
-            //header("Location: /?s=system");
+            header("Location: /?s=system");
         }else{
             echo mysql_error();
         }
@@ -121,12 +121,17 @@ $r = $mysql->select($s);
 	<tr>
 	
 		<td>上级用户</td>
-		<td>姓名</td>
+        <td>姓名</td>
+        <td>身份证</td>
 		<td>电话</td>
 		<td>银行卡</td>
 		<td>密码</td>
 		<td>下级个数</td>
-		<td></td>
+		<td>分红</td>
+		<td>扣点</td>
+		<td>总计</td>
+        <td></td>
+        <td></td>
 	
 	</tr>
 	
@@ -152,12 +157,36 @@ $r = $mysql->select($s);
 		?>
 	
 		<td><?php echo $one['username']; ?></td>
-		<td><?php echo $v['username']; ?></td>
+        <td><?php echo $v['username']; ?></td>
+        <td><?php echo $v['shenfen']; ?></td>
 		<td><?php echo $v['phone']; ?></td>
 		<td><?php echo $v['card']; ?></td>
 		<td><?php echo $v['password']; ?></td>
 		<td><?php echo count($xia); ?>/3</td>
-		<?php if($v['xianshi'] != 1) { ?>
+		
+		<?php
+			$fenhong = 0;
+			$koudian = 0;
+			$s = array(
+				'table' => 'money',
+				'condition' => 'uid = ' . $v['id']
+			);
+			$r = $mysql->select($s);
+			foreach($r as $key => $value) {
+				if($value['money']['fenhong'] == 1) {
+					$fenhong += $value['money']['money'];
+				}else{
+					$koudian += $value['money']['money'];
+				}
+			}
+			
+		?>
+		
+		
+		<td><?php echo $fenhong; ?></td>
+		<td><?php echo $koudian; ?></td>
+		<td><?php echo $fenhong + $koudian; ?></td>
+		<?php if($v['xianshi'] < 1) { ?>
 		<td>
 			
 			<form action="?s=system&token=<?php echo md5(rand(0, 100000000)); ?>" method="post">
@@ -174,10 +203,12 @@ $r = $mysql->select($s);
 				金额：<?php echo $v['money']; ?>
 				<input type="hidden" name="money" value="<?php echo $v['money'] + 600; ?>" />
 				<input type="hidden" name="id" value="<?php echo $v['id']; ?>" />
+                <input type="hidden" name="xianshi" value="1" />
 				<button>增加</button>
 			</form>
 		</td>
 		<?php } ?>
+        <td><a href="/?s=system&i=xiugai&id=<?php echo $v['id']; ?>">修改账号</a></td>
 	
 	</tr>
 	
